@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\design_patterns.props" />
+</Project>
