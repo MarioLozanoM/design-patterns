@@ -34,10 +34,14 @@ public class ProductRepository : IProductRepository
             {
                 product = BuildProduct(reader);
             }
+            else
+            {
+                throw new Exception("Product not found.");
+            }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error: {ex.Message}");
+            throw new Exception($"Error: {ex.Message}");
         }
         finally
         {
@@ -62,10 +66,14 @@ public class ProductRepository : IProductRepository
             {
                 product = BuildProduct(reader);
             }
+            else
+            {
+                throw new Exception("Product not found."); // TODO: throw 404 instead of 500
+            }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error: {ex.Message}");
+            throw new Exception($"Error: {ex.Message}");
         }
         finally
         {
@@ -112,7 +120,7 @@ public class ProductRepository : IProductRepository
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error: {ex.Message}");
+            throw new Exception($"Error: {ex.Message}");
         }
         finally
         {

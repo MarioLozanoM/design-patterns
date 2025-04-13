@@ -9,8 +9,7 @@ public class PayPalAdapter : IPaymentGateway
 
     public string ProcessPayment(PaymentDetailsDto details)
     {
-        _payPalApi.MakePayment(details.Amount.ToString(), details.From!, details.To!);
-        return "Pago realizado con PayPal a través del adaptador.";
+        return _payPalApi.MakePayment(details.Amount.ToString(), details.From!, details.To!);
     }
 }
 
@@ -25,7 +24,6 @@ public class CardAdapter : IPaymentGateway
 
     public string ProcessPayment(PaymentDetailsDto details)
     {
-        _cardApi.ProcessTransaction((double)details.Amount, details.CardNumber!, details.Cvv!, details.ExpiryDate!);
-        return "Pago realizado con Tarjeta de Crédito a través del adaptador.";
+        return _cardApi.ProcessTransaction((double)details.Amount, details.CardNumber!, details.Cvv!, details.ExpiryDate!);
     }
 }

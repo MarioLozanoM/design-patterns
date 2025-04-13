@@ -1,16 +1,16 @@
 public class PayPalAPI
 {
-    public void MakePayment(string amount, string from, string to)
+    public string MakePayment(string amount, string from, string to)
     {
-        Console.WriteLine($"PayPal: Procesando pago de ${amount} desde {from} a {to}...");
+        return $"PayPal: Procesando pago de ${amount} desde {from} a {to}...";
     }
 }
 
 public class CardAPI
 {
-    public void ProcessTransaction(double amount, string number, string cvv, string expiryDate)
+    public string ProcessTransaction(double amount, string number, string cvv, string expiryDate)
     {
-        Console.WriteLine($"Visa: Procesando transacción de ${amount} con tarjeta nro. {number}, de cvv {cvv} y fecha de expiración {expiryDate}...");
+        return $"Visa: Procesando transacción de ${amount} con tarjeta nro. {number}, de cvv {cvv} y fecha de expiración {expiryDate}...";
     }
 }
 

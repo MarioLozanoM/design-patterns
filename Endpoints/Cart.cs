@@ -4,7 +4,6 @@ public static class CartEndpoints
     {
         app.MapPost("/add-product-by-name", (string product) =>
         {
-            //TODO: fix what happens when the product is not found
             var cart = app.Services.GetRequiredService<IShoppingCart>();
             var commandInvoker = app.Services.GetRequiredService<ICommandInvoker>();
             var addProductCommand = new AddProductCommand(cart: cart, productName: product);
