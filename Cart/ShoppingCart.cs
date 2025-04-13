@@ -38,7 +38,7 @@ public class ShoppingCart : IShoppingCart
         //TODO: handle add quantity when repeated products are added
         if (product == null)
         {
-            throw new ArgumentNullException(nameof(product), "Product not found."); //TODO: create custom exceptions for different cases
+            throw new NotFoundException($"Product not found.");
         }
         _products.Add(product);
     }
@@ -61,11 +61,11 @@ public class ShoppingCart : IShoppingCart
     {
         if (product == null)
         {
-            throw new ArgumentNullException(nameof(product), "Product not found."); //TODO: create custom exceptions for different cases
+            throw new NotFoundException($"Product not found.");
         }
         if (!_products.Contains(product))
         {
-            throw new Exception("Product not in cart"); //TODO: create custom exceptions for different cases
+            throw new NotFoundException("Product not in cart");
         }
         _products.Remove(product);
     }
@@ -79,7 +79,7 @@ public class ShoppingCart : IShoppingCart
     {
         _products.Clear();
     }
-    
+
     public int GetProductCount()
     {
         return _products.Count;
@@ -89,7 +89,7 @@ public class ShoppingCart : IShoppingCart
     {
         if (string.IsNullOrEmpty(productName))
         {
-            throw new ArgumentException("Product name cannot be null or empty.");
+            throw new BadRequestException("Product name cannot be null or empty.");
         }
     }
 
@@ -97,7 +97,7 @@ public class ShoppingCart : IShoppingCart
     {
         if (id <= 0)
         {
-            throw new ArgumentException("Product ID must be greater than zero.");
+            throw new BadRequestException("Product ID must be greater than zero.");
         }
     }
 }

@@ -36,13 +36,13 @@ public class ProductRepository : IProductRepository
             }
             else
             {
-                throw new Exception("Product not found.");
+                throw new NotFoundException("Product not found.");
             }
         }
-        catch (Exception ex)
-        {
-            throw new Exception($"Error: {ex.Message}");
-        }
+        // catch (Exception ex)
+        // {
+        //     throw new Exception($"Error: {ex.Message}");
+        // }
         finally
         {
             _connection.Close();
@@ -68,13 +68,13 @@ public class ProductRepository : IProductRepository
             }
             else
             {
-                throw new Exception("Product not found."); // TODO: throw 404 instead of 500
+                throw new NotFoundException("Product not found.");
             }
         }
-        catch (Exception ex)
-        {
-            throw new Exception($"Error: {ex.Message}");
-        }
+        // catch (Exception ex)
+        // {
+        //     throw new Exception($"Error: {ex.Message}");
+        // }
         finally
         {
             _connection.Close();
@@ -118,10 +118,10 @@ public class ProductRepository : IProductRepository
                 products.Add(product);
             }
         }
-        catch (Exception ex)
-        {
-            throw new Exception($"Error: {ex.Message}");
-        }
+        // catch (Exception ex)
+        // {
+        //     throw new Exception($"Error: {ex.Message}");
+        // }
         finally
         {
             _connection.Close();
