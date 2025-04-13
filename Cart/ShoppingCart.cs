@@ -1,7 +1,9 @@
 public interface IShoppingCart
 {
-    void AddProduct(string product);
-    void RemoveProduct(string product);
+    void AppProductById(int id);
+    void AddProductByName(string productName);
+    void RemoveProductById(int id);
+    void RemoveProductByName(string productName);
     List<string> ShowCart();
     void ClearCart();
     int GetProductCount();
@@ -9,21 +11,79 @@ public interface IShoppingCart
 
 public class ShoppingCart : IShoppingCart
 {
-    private readonly List<string> _products = new List<string>();
+    private readonly List<Product> _products = [];
+    private readonly IProductRepository _productRepository;
 
-    public void AddProduct(string product)
+    public ShoppingCart()
     {
+        _productRepository = new ProductRepository(new QueryBuilder());
+    }
+
+    //TODO: see if we can use decorator for all the ids and names
+
+    public void AppProductById(int id)
+    {
+        if (id <= 0)
+        {
+            throw new ArgumentException("Product ID must be greater than zero.");
+        }
+        var product = _productRepository.GetById(id);
+        AddProduct(product);
+    }
+
+    public void AddProductByName(string productName)
+    {
+        if (string.IsNullOrEmpty(productName))
+        {
+            throw new ArgumentException("Product name cannot be null or empty.");
+        }
+        
+        var product = _productRepository.GetByName(productName);
+        AddProduct(product);
+    }
+
+    public void AddProduct(Product product)
+    {
+        //TODO: handle add quantity when repeated products are added
+        if (product == null)
+        {
+            throw new ArgumentNullException(nameof(product), "Product not found."); //TODO: create custom exceptions for different cases
+        }
         _products.Add(product);
     }
 
-    public void RemoveProduct(string product)
+    public void RemoveProductById(int id)
     {
+        var product = _productRepository.GetById(id);
+        RemoveProduct(product);
+    }
+
+    public void RemoveProductByName(string productName)
+    {
+        if (string.IsNullOrEmpty(productName))
+        {
+            throw new ArgumentException("Product name cannot be null or empty.");
+        }
+        var product = _productRepository.GetByName(productName);
+        RemoveProduct(product);
+    }
+
+    public void RemoveProduct(Product product)
+    {
+        if (product == null)
+        {
+            throw new ArgumentNullException(nameof(product), "Product not found."); //TODO: create custom exceptions for different cases
+        }
+        if (!_products.Contains(product))
+        {
+            throw new Exception("Product not in cart"); //TODO: create custom exceptions for different cases
+        }
         _products.Remove(product);
     }
 
     public List<string> ShowCart()
     {
-        return _products;
+        return _products.Select(p => p.ToString()).ToList();
     }
 
     public void ClearCart()

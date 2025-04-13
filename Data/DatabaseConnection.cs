@@ -14,7 +14,7 @@ public class DatabaseConnection : IDatabaseConnection
     // Constructor privado.
     private DatabaseConnection()
     {
-        string connectionString = "Data Source=MARIO-LG;Initial Catalog=project;User ID=sa;Password=$$abc123;TrustServerCertificate=True;";
+        string connectionString = "Data Source=MARIO-LG;Initial Catalog=project;User ID=sa;Password=$$abc123;TrustServerCertificate=True;"; // TODO: move to secrets
         _connection = new SqlConnection(connectionString);
     }
 

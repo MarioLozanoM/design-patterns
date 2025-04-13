@@ -1,43 +1,74 @@
-public class AddProductCommand : ICommand
+public class BaseProductCommand
 {
-    private readonly IShoppingCart _cart;
-    private readonly string _product;
-
-    public AddProductCommand(IShoppingCart cart, string product)
+    public void AddProduct(IShoppingCart cart, string? productName, int? productId)
     {
-        _cart = cart;
-        _product = product;
+        if (!string.IsNullOrEmpty(productName))
+        {
+            cart.AddProductByName(productName);
+        }
+        else if (productId.HasValue)
+        {
+            cart.AppProductById(productId.Value);
+        }
     }
 
-    public void Execute()
+    public void RemoveProduct(IShoppingCart cart, string? productName, int? productId)
     {
-        _cart.AddProduct(_product);
-    }
-
-    public void Undo()
-    {
-        _cart.RemoveProduct(_product);
+        if (!string.IsNullOrEmpty(productName))
+        {
+            cart.RemoveProductByName(productName);
+        }
+        else if (productId.HasValue)
+        {
+            cart.RemoveProductById(productId.Value);
+        }
     }
 }
 
-public class RemoveProductCommand : ICommand
+public class AddProductCommand : BaseProductCommand, ICommand
 {
     private readonly IShoppingCart _cart;
-    private readonly string _product;
+    private readonly string? _productName;
+    private readonly int? _productId;
 
-    public RemoveProductCommand(IShoppingCart cart, string product)
+    public AddProductCommand(IShoppingCart cart, string? productName = null, int? productId = null)
     {
         _cart = cart;
-        _product = product;
+        _productName = productName;
+        _productId = productId;
     }
 
     public void Execute()
     {
-        _cart.RemoveProduct(_product);
+        AddProduct(_cart, _productName, _productId);
     }
 
     public void Undo()
     {
-        _cart.AddProduct(_product);
+        RemoveProduct(_cart, _productName, _productId);
+    }
+}
+
+public class RemoveProductCommand : BaseProductCommand, ICommand
+{
+    private readonly IShoppingCart _cart;
+    private readonly string? _productName;
+    private readonly int? _productId;
+
+    public RemoveProductCommand(IShoppingCart cart, string? productName = null, int? productId = null)
+    {
+        _cart = cart;
+        _productName = productName;
+        _productId = productId;
+    }
+
+    public void Execute()
+    {
+        RemoveProduct(_cart, _productName, _productId);
+    }
+
+    public void Undo()
+    {
+        AddProduct(_cart, _productName, _productId);
     }
 }

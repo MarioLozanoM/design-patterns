@@ -25,7 +25,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/product", (IProductRepository repository) =>
+//TODO: separate each section in a different file
+
+app.MapGet("/products", (IProductRepository repository) =>
 {
     var getProductDto = new GetProductDto(
         Name: string.Empty,
@@ -43,15 +45,46 @@ app.MapGet("/product", (IProductRepository repository) =>
 .WithOpenApi()
 .WithTags("Products");
 
-app.MapPost("/add-product", (string product) =>
+app.MapGet("/product/{id}", (int id, IProductRepository repository) =>
 {
+    var product = repository.GetById(id);
+    return product != null ? Results.Ok(product) : Results.NotFound("Producto no encontrado.");
+})
+.WithName("GetProductById")
+.WithOpenApi()
+.WithTags("Products");
+
+app.MapGet("/product/name/{name}", (string name, IProductRepository repository) =>
+{
+    var product = repository.GetByName(name);
+    return product != null ? Results.Ok(product) : Results.NotFound("Producto no encontrado.");
+})
+.WithName("GetProductByName")
+.WithOpenApi()
+.WithTags("Products");
+
+app.MapPost("/add-product-by-name", (string product) =>
+{
+    //TODO: fix what happens when the product is not found
     var cart = app.Services.GetRequiredService<IShoppingCart>();
     var commandInvoker = app.Services.GetRequiredService<ICommandInvoker>();
-    var addProductCommand = new AddProductCommand(cart, product);
+    var addProductCommand = new AddProductCommand(cart: cart, productName: product);
     commandInvoker.ExecuteCommand(addProductCommand);
     return Results.Ok("Producto agregado al carrito.");
 })
 .WithName("AddProduct")
+.WithOpenApi()
+.WithTags("Cart");
+
+app.MapPost("/add-product-by-id", (int productId) =>
+{
+    var cart = app.Services.GetRequiredService<IShoppingCart>();
+    var commandInvoker = app.Services.GetRequiredService<ICommandInvoker>();
+    var addProductCommand = new AddProductCommand(cart: cart, productId: productId);
+    commandInvoker.ExecuteCommand(addProductCommand);
+    return Results.Ok("Producto agregado al carrito.");
+})
+.WithName("AddProductById")
 .WithOpenApi()
 .WithTags("Cart");
 
@@ -77,7 +110,7 @@ app.MapGet("/cart", () =>
 .WithOpenApi()
 .WithTags("Cart");
 
-app.MapPost("/clear-cart", () =>
+app.MapDelete("/clear-cart", () =>
 {
     var cart = app.Services.GetRequiredService<IShoppingCart>();
     cart.ClearCart();

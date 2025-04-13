@@ -1,5 +1,6 @@
 public interface IQueryBuilder
 {
+    IQueryBuilder SetId(int id);
     IQueryBuilder SetName(string name);
     IQueryBuilder SetCategory(string category);
     IQueryBuilder SetPriceRange(decimal minPrice, decimal maxPrice);
@@ -10,6 +11,7 @@ public interface IQueryBuilder
 
 public class QueryBuilder : IQueryBuilder
 {
+    private int? _id;
     private string? _name;
     private string? _category;
     private decimal _minPrice;
@@ -17,6 +19,12 @@ public class QueryBuilder : IQueryBuilder
     private double _minRating;
     private string? _orderByField;
     private bool _ascending;
+
+    public IQueryBuilder SetId(int id)
+    {
+        _id = id;
+        return this;
+    }
 
     public IQueryBuilder SetName(string name)
     {
@@ -54,6 +62,9 @@ public class QueryBuilder : IQueryBuilder
     {
         string query = "SELECT * FROM Products WHERE 1=1";
 
+        if (_id != null && _id > 0)
+            query += $" AND Id = {_id}";
+
         if (!string.IsNullOrEmpty(_name))
             query += $" AND Name LIKE '%{_name}%'";
 
@@ -84,7 +95,7 @@ public class QueryDirector
         _defaultFilter = new ProductFilter();
     }
 
-    public string BuildFeaturedProductsQuery()
+    public string BuildGetProductsQuery()
     {
         var currentFilter = _defaultFilter.Clone();
         return _builder
