@@ -19,25 +19,16 @@ public class ShoppingCart : IShoppingCart
         _productRepository = new ProductRepository(new QueryBuilder());
     }
 
-    //TODO: see if we can use decorator for all the ids and names
-
     public void AppProductById(int id)
     {
-        if (id <= 0)
-        {
-            throw new ArgumentException("Product ID must be greater than zero.");
-        }
+        ValidateProductId(id);
         var product = _productRepository.GetById(id);
         AddProduct(product);
     }
 
     public void AddProductByName(string productName)
     {
-        if (string.IsNullOrEmpty(productName))
-        {
-            throw new ArgumentException("Product name cannot be null or empty.");
-        }
-        
+        ValidateProductName(productName);
         var product = _productRepository.GetByName(productName);
         AddProduct(product);
     }
@@ -54,16 +45,14 @@ public class ShoppingCart : IShoppingCart
 
     public void RemoveProductById(int id)
     {
+        ValidateProductId(id);
         var product = _productRepository.GetById(id);
         RemoveProduct(product);
     }
 
     public void RemoveProductByName(string productName)
     {
-        if (string.IsNullOrEmpty(productName))
-        {
-            throw new ArgumentException("Product name cannot be null or empty.");
-        }
+        ValidateProductName(productName);
         var product = _productRepository.GetByName(productName);
         RemoveProduct(product);
     }
@@ -90,8 +79,25 @@ public class ShoppingCart : IShoppingCart
     {
         _products.Clear();
     }
+    
     public int GetProductCount()
     {
         return _products.Count;
+    }
+
+    private void ValidateProductName(string productName)
+    {
+        if (string.IsNullOrEmpty(productName))
+        {
+            throw new ArgumentException("Product name cannot be null or empty.");
+        }
+    }
+
+    private void ValidateProductId(int id)
+    {
+        if (id <= 0)
+        {
+            throw new ArgumentException("Product ID must be greater than zero.");
+        }
     }
 }
