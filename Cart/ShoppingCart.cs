@@ -1,9 +1,11 @@
 public interface IShoppingCart
 {
-    void AppProductById(int id);
-    void AddProductByName(string productName);
+    void AppProductById(int id, int quantity = 1);
+    void AddProductByName(string productName, int quantity = 1);
     void RemoveProductById(int id);
     void RemoveProductByName(string productName);
+    void DecreaseProductById(int id);
+    void DecreaseProductByName(string productName);
     List<string> ShowCart();
     void ClearCart();
     int GetProductCount();
@@ -19,18 +21,18 @@ public class ShoppingCart : IShoppingCart
         _productRepository = new ProductRepository(new QueryBuilder());
     }
 
-    public void AppProductById(int id)
+    public void AppProductById(int id, int quantity = 1)
     {
         ValidateProductId(id);
         var product = _productRepository.GetById(id);
-        AddProduct(new CartProduct(product.Id!, product.Name!, product.Price, 1));
+        AddProduct(new CartProduct(product.Id!, product.Name!, product.Price, quantity));
     }
 
-    public void AddProductByName(string productName)
+    public void AddProductByName(string productName, int quantity = 1)
     {
         ValidateProductName(productName);
         var product = _productRepository.GetByName(productName);
-        AddProduct(new CartProduct(product.Id!, product.Name!, product.Price, 1));
+        AddProduct(new CartProduct(product.Id!, product.Name!, product.Price, quantity));
     }
 
     public void AddProduct(CartProduct product)
@@ -69,6 +71,33 @@ public class ShoppingCart : IShoppingCart
     }
 
     public void RemoveProduct(CartProduct product)
+    {
+        if (product == null)
+        {
+            throw new NotFoundException($"Product not found.");
+        }
+        if (!ProductExists(product))
+        {
+            throw new NotFoundException("Product not in cart");
+        }
+        _products.Remove(_products.First(p => p.Id == product.Id));
+    }
+
+    public void DecreaseProductById(int id)
+    {
+        ValidateProductId(id);
+        var product = _productRepository.GetById(id);
+        DecreaseProduct(new CartProduct(product.Id!, product.Name!, product.Price, 1));
+    }
+
+    public void DecreaseProductByName(string productName)
+    {
+        ValidateProductName(productName);
+        var product = _productRepository.GetByName(productName);
+        DecreaseProduct(new CartProduct(product.Id!, product.Name!, product.Price, 1));
+    }
+
+    public void DecreaseProduct(CartProduct product)
     {
         if (product == null)
         {

@@ -2,13 +2,13 @@ public static class CartEndpoints
 {
     public static void MapCartEndpoints(this WebApplication app)
     {
-        app.MapPost("/add-product-by-name", (string product) =>
+        app.MapPost("/add-product-by-name", (string product, int quantity) =>
         {
             try
             {
                 var cart = app.Services.GetRequiredService<IShoppingCart>();
                 var commandInvoker = app.Services.GetRequiredService<ICommandInvoker>();
-                var addProductCommand = new AddProductCommand(cart: cart, productName: product);
+                var addProductCommand = new AddProductCommand(cart: cart, productName: product, quantity: quantity);
                 commandInvoker.ExecuteCommand(addProductCommand);
                 return Results.Ok("Producto agregado al carrito.");
             }
@@ -29,13 +29,13 @@ public static class CartEndpoints
         .WithOpenApi()
         .WithTags("Cart");
 
-        app.MapPost("/add-product-by-id", (int productId) =>
+        app.MapPost("/add-product-by-id", (int productId, int quantity) =>
         {
             try
             {
                 var cart = app.Services.GetRequiredService<IShoppingCart>();
                 var commandInvoker = app.Services.GetRequiredService<ICommandInvoker>();
-                var addProductCommand = new AddProductCommand(cart: cart, productId: productId);
+                var addProductCommand = new AddProductCommand(cart: cart, productId: productId, quantity: quantity);
                 commandInvoker.ExecuteCommand(addProductCommand);
                 return Results.Ok("Producto agregado al carrito.");
             }
@@ -110,6 +110,60 @@ public static class CartEndpoints
         .WithOpenApi()
         .WithTags("Cart");
 
+        app.MapDelete("/decrease-product-by-name", (string product) =>
+        {
+            try
+            {
+                var cart = app.Services.GetRequiredService<IShoppingCart>();
+                var commandInvoker = app.Services.GetRequiredService<ICommandInvoker>();
+                var decreaseProductCommand = new DecreaseProductCommand(cart: cart, productName: product);
+                commandInvoker.ExecuteCommand(decreaseProductCommand);
+                return Results.Ok("Producto disminuido del carrito.");
+            }
+            catch (NotFoundException ex)
+            {
+                return Results.NotFound(ex.Message);
+            }
+            catch (BadRequestException ex)
+            {
+                return Results.BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem(ex.Message);
+            }
+        })
+        .WithName("DecreaseProductByName")
+        .WithOpenApi()
+        .WithTags("Cart");
+
+        app.MapDelete("/decrease-product-by-id", (int productId) =>
+        {
+            try
+            {
+                var cart = app.Services.GetRequiredService<IShoppingCart>();
+                var commandInvoker = app.Services.GetRequiredService<ICommandInvoker>();
+                var decreaseProductCommand = new DecreaseProductCommand(cart: cart, productId: productId);
+                commandInvoker.ExecuteCommand(decreaseProductCommand);
+                return Results.Ok("Producto disminuido del carrito.");
+            }
+            catch (NotFoundException ex)
+            {
+                return Results.NotFound(ex.Message);
+            }
+            catch (BadRequestException ex)
+            {
+                return Results.BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem(ex.Message);
+            }
+        })
+        .WithName("DecreaseProductById")
+        .WithOpenApi()
+        .WithTags("Cart");
+        
         app.MapGet("/cart", () =>
         {
             try
