@@ -11,7 +11,7 @@ public interface IShoppingCart
 
 public class ShoppingCart : IShoppingCart
 {
-    private readonly List<Product> _products = [];
+    private readonly List<CartProduct> _products = [];
     private readonly IProductRepository _productRepository;
 
     public ShoppingCart()
@@ -23,56 +23,75 @@ public class ShoppingCart : IShoppingCart
     {
         ValidateProductId(id);
         var product = _productRepository.GetById(id);
-        AddProduct(product);
+        AddProduct(new CartProduct(product.Id!, product.Name!, product.Price, 1));
     }
 
     public void AddProductByName(string productName)
     {
         ValidateProductName(productName);
         var product = _productRepository.GetByName(productName);
-        AddProduct(product);
+        AddProduct(new CartProduct(product.Id!, product.Name!, product.Price, 1));
     }
 
-    public void AddProduct(Product product)
+    public void AddProduct(CartProduct product)
     {
-        //TODO: handle add quantity when repeated products are added
         if (product == null)
         {
             throw new NotFoundException($"Product not found.");
         }
-        _products.Add(product);
+        if (!ProductExists(product))
+        {
+            _products.Add(product);
+        }
+        else
+        {
+            IncreaseProductQuantity(product);
+        }
+    }
+
+    private bool ProductExists(CartProduct product)
+    {
+        return _products.Any(p => p.Id == product.Id);
     }
 
     public void RemoveProductById(int id)
     {
         ValidateProductId(id);
         var product = _productRepository.GetById(id);
-        RemoveProduct(product);
+        RemoveProduct(new CartProduct(product.Id!, product.Name!, product.Price, 1));
     }
 
     public void RemoveProductByName(string productName)
     {
         ValidateProductName(productName);
         var product = _productRepository.GetByName(productName);
-        RemoveProduct(product);
+        RemoveProduct(new CartProduct(product.Id!, product.Name!, product.Price, 1));
     }
 
-    public void RemoveProduct(Product product)
+    public void RemoveProduct(CartProduct product)
     {
         if (product == null)
         {
             throw new NotFoundException($"Product not found.");
         }
-        if (!_products.Contains(product))
+        if (!ProductExists(product))
         {
             throw new NotFoundException("Product not in cart");
         }
-        _products.Remove(product);
+        var existingProduct = _products.FirstOrDefault(p => p.Id == product.Id);
+        if (existingProduct != null && existingProduct.Quantity > 1)
+        {
+            existingProduct.Quantity--;
+        }
+        else if (existingProduct != null)
+        {
+            _products.Remove(existingProduct);
+        }
     }
 
     public List<string> ShowCart()
     {
-        return _products.Select(p => p.ToString()).ToList();
+        return [.. _products.Select(p => p.ToString())];
     }
 
     public void ClearCart()
@@ -98,6 +117,15 @@ public class ShoppingCart : IShoppingCart
         if (id <= 0)
         {
             throw new BadRequestException("Product ID must be greater than zero.");
+        }
+    }
+
+    private void IncreaseProductQuantity(CartProduct product)
+    {
+        var existingProduct = _products.FirstOrDefault(p => p.Id == product.Id);
+        if (existingProduct != null)
+        {
+            existingProduct.Quantity++;
         }
     }
 }

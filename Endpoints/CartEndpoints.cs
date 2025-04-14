@@ -25,7 +25,7 @@ public static class CartEndpoints
                 return Results.Problem(ex.Message);
             }
         })
-        .WithName("AddProduct")
+        .WithName("AddProductByName")
         .WithOpenApi()
         .WithTags("Cart");
 
@@ -56,13 +56,13 @@ public static class CartEndpoints
         .WithOpenApi()
         .WithTags("Cart");
 
-        app.MapDelete("/remove-product", (string product) =>
+        app.MapDelete("/remove-product-by-name", (string product) =>
         {
             try
             {
                 var cart = app.Services.GetRequiredService<IShoppingCart>();
                 var commandInvoker = app.Services.GetRequiredService<ICommandInvoker>();
-                var removeProductCommand = new RemoveProductCommand(cart, product);
+                var removeProductCommand = new RemoveProductCommand(cart: cart, productName: product);
                 commandInvoker.ExecuteCommand(removeProductCommand);
                 return Results.Ok("Producto eliminado del carrito.");
             }
@@ -79,7 +79,34 @@ public static class CartEndpoints
                 return Results.Problem(ex.Message);
             }
         })
-        .WithName("RemoveProduct")
+        .WithName("RemoveProductByName")
+        .WithOpenApi()
+        .WithTags("Cart");
+
+        app.MapDelete("/remove-product-by-id", (int productId) =>
+        {
+            try
+            {
+                var cart = app.Services.GetRequiredService<IShoppingCart>();
+                var commandInvoker = app.Services.GetRequiredService<ICommandInvoker>();
+                var removeProductCommand = new RemoveProductCommand(cart: cart, productId: productId);
+                commandInvoker.ExecuteCommand(removeProductCommand);
+                return Results.Ok("Producto eliminado del carrito.");
+            }
+            catch (NotFoundException ex)
+            {
+                return Results.NotFound(ex.Message);
+            }
+            catch (BadRequestException ex)
+            {
+                return Results.BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem(ex.Message);
+            }
+        })
+        .WithName("RemoveProductById")
         .WithOpenApi()
         .WithTags("Cart");
 
