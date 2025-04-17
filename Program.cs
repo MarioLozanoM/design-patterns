@@ -6,8 +6,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<IQueryBuilder, QueryBuilder>();
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddTransient<IQueryBuilder, QueryBuilder>();
+builder.Services.AddSingleton<IProductRepository, ProductRepository>();
 builder.Services.AddSingleton<IShoppingCart, ShoppingCart>();
 builder.Services.AddSingleton<ICommandInvoker, CommandInvoker>();
 builder.Services.AddSingleton<PayPalAPI>();
@@ -18,7 +18,6 @@ builder.Services.AddSingleton<CardAdapter>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

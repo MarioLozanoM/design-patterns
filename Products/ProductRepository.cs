@@ -10,17 +10,22 @@ public record GetProductDto(string? Name, string? Category, decimal MinPrice, de
 public class ProductRepository : IProductRepository
 {
     private readonly SqlConnection _connection;
-    private IQueryBuilder _queryBuilder;
+    private IQueryBuilder _queryBuilder = new QueryBuilder();
+    private readonly Dictionary<int, ProductFlyweight> _cache = new();
 
-    public ProductRepository(IQueryBuilder queryBuilder)
+    public ProductRepository()
     {
         DatabaseConnection dbConnection = DatabaseConnection.Instance;
         _connection = dbConnection.GetConnection();
-        _queryBuilder = queryBuilder;
     }
 
     public Product GetById(int id)
     {
+        if (_cache.ContainsKey(id)){
+            return _cache[id].GetProduct();
+        }
+
+        _queryBuilder = new QueryBuilder();
         string query = _queryBuilder.SetId(id).BuildQuery();
         Product product = new();
 
@@ -38,11 +43,8 @@ public class ProductRepository : IProductRepository
             {
                 throw new NotFoundException("Product not found.");
             }
+            _cache[id] = new ProductFlyweight(product);
         }
-        // catch (Exception ex)
-        // {
-        //     throw new Exception($"Error: {ex.Message}");
-        // }
         finally
         {
             _connection.Close();
@@ -53,6 +55,7 @@ public class ProductRepository : IProductRepository
 
     public Product GetByName(string name)
     {
+        _queryBuilder = new QueryBuilder();
         string query = _queryBuilder.SetName(name).BuildQuery();
         Product product = new();
 
@@ -71,10 +74,6 @@ public class ProductRepository : IProductRepository
                 throw new NotFoundException("Product not found.");
             }
         }
-        // catch (Exception ex)
-        // {
-        //     throw new Exception($"Error: {ex.Message}");
-        // }
         finally
         {
             _connection.Close();
@@ -85,6 +84,7 @@ public class ProductRepository : IProductRepository
 
     public List<Product> GetProducts(GetProductDto getProductDto)
     {
+        _queryBuilder = new QueryBuilder();
         var director = new QueryDirector(_queryBuilder);
         string query;
         if (string.IsNullOrEmpty(getProductDto.Name) &&
@@ -118,10 +118,6 @@ public class ProductRepository : IProductRepository
                 products.Add(product);
             }
         }
-        // catch (Exception ex)
-        // {
-        //     throw new Exception($"Error: {ex.Message}");
-        // }
         finally
         {
             _connection.Close();

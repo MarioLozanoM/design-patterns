@@ -16,9 +16,9 @@ public class ShoppingCart : IShoppingCart
     private readonly List<CartProduct> _products = [];
     private readonly IProductRepository _productRepository;
 
-    public ShoppingCart()
+    public ShoppingCart(IProductRepository productRepository)
     {
-        _productRepository = new ProductRepository(new QueryBuilder());
+        _productRepository = productRepository;
     }
 
     public void AppProductById(int id, int quantity = 1)

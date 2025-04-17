@@ -32,6 +32,10 @@ Utilizado para separar la lógica de acceso a datos de la lógica de negocio, se
 
 Utilizado para adaptar la interfaz de los servicios de pago a la interfaz que espera la aplicación, se puede encontrar en el archivo `Payments/Adapter.cs`.
 
+### Flyweight
+
+Utilizado para guardar en cache los datos de los productos, se puede encontrar en el archivo `Products/ProductCache.cs`.
+
 ## Patrones de Comportamiento
 
 ### Cadena de Responsabilidad
