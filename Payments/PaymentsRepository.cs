@@ -12,14 +12,14 @@ public enum PaymentType
 
 public class PaymentRepository : IPaymentRepository
 {
-    private readonly IPaymentStrategy _paymentProcessor;
+    private readonly IPaymentStrategy _paymentStrategy;
     private readonly DiscountHandler _discountHandler;
     private readonly BalanceHandler _balanceHandler;
     private readonly PaymentProcessorHandler _paymentProcessorHandler;
 
-    public PaymentRepository(IPaymentStrategy paymentProcessor, PaymentType paymentType)
+    public PaymentRepository(IPaymentStrategy paymentStrategy, PaymentType paymentType)
     {
-        _paymentProcessor = paymentProcessor;
+        _paymentStrategy = paymentStrategy;
         _discountHandler = new DiscountHandler();
         _balanceHandler = new BalanceHandler();
         _paymentProcessorHandler = new PaymentProcessorHandler();
@@ -29,9 +29,9 @@ public class PaymentRepository : IPaymentRepository
 
     public string ProcessPayment(decimal amount)
     {
-        var processMessage = _paymentProcessor.ProcessPayment(amount);
+        var processMessage = _paymentStrategy.ProcessPayment(amount);
         var message = _discountHandler.Handle(amount, processMessage);
-        message += $"  ||  Pago procesado con {_paymentProcessor.GetType().Name}.";
+        message += $"  ||  Pago procesado con {_paymentStrategy.GetType().Name}.";
         return message;
     }
 }

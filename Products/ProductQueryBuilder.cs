@@ -95,7 +95,7 @@ public class QueryDirector
         _defaultFilter = new ProductFilter();
     }
 
-    public string BuildGetProductsQuery()
+    public string BuildGetDefaultProductQuery()
     {
         var currentFilter = _defaultFilter.Clone();
         return _builder

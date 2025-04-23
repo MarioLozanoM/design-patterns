@@ -39,7 +39,7 @@ public class BalanceHandler : PaymentHandler
     {
         message += $"  ||  Verificando saldo suficiente para pagar ${amount}...";
 
-        var hasSufficientBalance = _customerAccount.hasSufficientBalance(amount);
+        var hasSufficientBalance = _customerAccount.HasSufficientBalance(amount);
         if (!hasSufficientBalance)
         {
             throw new Exception("Saldo insuficiente.");

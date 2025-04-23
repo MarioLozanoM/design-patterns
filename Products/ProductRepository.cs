@@ -89,10 +89,11 @@ public class ProductRepository : IProductRepository
         string query;
         if (string.IsNullOrEmpty(getProductDto.Name) &&
             string.IsNullOrEmpty(getProductDto.Category) &&
-            getProductDto.MinPrice <= 0 && getProductDto.MaxPrice <= 0 &&
+            getProductDto.MinPrice <= 0 && 
+            getProductDto.MaxPrice <= 0 &&
             getProductDto.MinRating <= 0)
         {
-            query = director.BuildGetProductsQuery();
+            query = director.BuildGetDefaultProductQuery();
         }
         else
         {

@@ -16,7 +16,7 @@ public class CardAPI
 
 public class CustomerAccount
 {
-    public bool hasSufficientBalance(decimal amount)
+    public bool HasSufficientBalance(decimal amount)
     {
         // Simulación de verificación de saldo.
         return true;
